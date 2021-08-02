@@ -97,7 +97,7 @@ fi
 
 # Get current and old WAN ip
 WAN_IP=`curl -s ${WANIPSITE}`
-WAN_IP_FILE=$HOME/.cf-wan_ip_$CFRECORD_NAME.txt
+WAN_IP_FILE=/tmp/.cf-wan_ip_$CFRECORD_NAME.txt
 if [ -f $WAN_IP_FILE ]; then
   OLD_WAN_IP=`cat $WAN_IP_FILE`
 else
@@ -109,10 +109,12 @@ fi
 if [ "$WAN_IP" = "$OLD_WAN_IP" ] && [ "$FORCE" = false ]; then
   echo "WAN IP Unchanged, to update anyway use flag -f true"
   exit 0
+else
+  echo $WAN_IP > $WAN_IP_FILE
 fi
 
 # Get zone_identifier & record_identifier
-ID_FILE=$HOME/.cf-id_$CFRECORD_NAME.txt
+ID_FILE=/tmp/.cf-id_$CFRECORD_NAME.txt
 if [ -f $ID_FILE ] && [ $(wc -l $ID_FILE | cut -d " " -f 1) == 4 ] \
   && [ "$(sed -n '3,1p' "$ID_FILE")" == "$CFZONE_NAME" ] \
   && [ "$(sed -n '4,1p' "$ID_FILE")" == "$CFRECORD_NAME" ]; then
